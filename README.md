@@ -1,4 +1,5 @@
-# Pathshala [ Multi-Tenant School Management Platform ] — HLD & LLD
+# Pathshala 
+Multi-Tenant School Management Platform — HLD & LLD
  
 ## 1. Client requirement summary
  
