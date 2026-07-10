@@ -1,2 +1,2 @@
-# MyBank
-Full Stack Banking Application
+# MySchool
+Full Stack School Adminstration
