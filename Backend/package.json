@@ -1,0 +1,15 @@
+{
+  "name": "pathshala",
+  "version": "1.0.0",
+  "description": "Multi-Tenant School Management Platform",
+  "license": "ISC",
+  "author": "Mohankumar",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
