@@ -5,6 +5,10 @@ const app = express();
 const { logger } = require('./middlewares/logger');
 const { errorHandler } = require("./middlewares/errorHandler");
 
+// DNS
+const dns = require("dns");
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
+
 app.use(logger);
 app.use(express.json());
 
