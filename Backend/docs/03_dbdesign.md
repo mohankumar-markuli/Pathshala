@@ -40,15 +40,15 @@ The `School` collection represents the tenant in our white-label architecture. E
 
 ## 2. User Schema (Core Identity)
 
-The `User` collection handles authentication and core identity. We use a `role` Enum to differentiate user permissions and determine which detailed profile (Student, Staff, Parent) they map to.
+The `User` collection handles authentication and core identity. We use a `role` Enum to differentiate user permissions and determine which detailed profile (Student, Staff) they map to.
 
 ```json
 {
   "_id": "ObjectId",
-  "schoolId": "ObjectId",           // Reference to School collection
-  "email": "String",                // Must be unique per school
+  "schoolIds": ["ObjectId"],        // Array of references to School collection (Supports multiple schools for Owners and Students. Teachers typically have one)
+  "email": "String",                // Must be unique across the platform or per tenant
   "passwordHash": "String",         // Bcrypt hashed password
-  "role": "Enum",                   // [SUPERADMIN, SCHOOL_ADMIN, TEACHER, STUDENT, PARENT, STAFF]
+  "role": "Enum",                   // [SUPERADMIN, SCHOOL_OWNER, SCHOOL_ADMIN, TEACHER, STUDENT, STAFF]
   "profilePictureUrl": "String",
   "firstName": "String",
   "lastName": "String",
@@ -119,10 +119,29 @@ Schools operate in academic cycles. Hardcoding dates in every record is bad prac
 }
 ```
 
+### 3.5 Anonymous Ticket (Grievance) Schema
+Allows students or staff to report sensitive issues (like ragging, bullying, or other concerns) to the administration completely anonymously.
+
+```json
+{
+  "_id": "ObjectId",
+  "schoolId": "ObjectId",
+  "title": "String",                // Short summary of the report
+  "description": "String",          // Detailed explanation of the incident or issue
+  "category": "Enum",               // [RAGGING, BULLYING, HARASSMENT, FACILITY_ISSUE, OTHER]
+  "status": "Enum",                 // [OPEN, IN_PROGRESS, RESOLVED, CLOSED]
+  "priority": "Enum",               // [LOW, MEDIUM, HIGH, CRITICAL]
+  "resolutionNotes": "String",      // Admin's notes on how the ticket was addressed
+  "createdAt": "Date",
+  "updatedAt": "Date"
+}
+```
+*Note: This schema intentionally omits any `userId` or `requesterId` to ensure the report remains strictly anonymous.*
+
 ## 4. Design Guidelines
 
 1. **Schema Validation:** Use Mongoose (or similar ODM) to enforce the Enums, Data Types, and Required fields at the application level.
 2. **Indexing:** 
-   - Compound index on `{ schoolId: 1, email: 1 }` in the `User` collection for fast login lookups while allowing the same email across different schools (if a parent has kids in two different Pathshala-powered schools).
-   - Index `schoolId` on all tenant collections.
+   - Compound index on `{ schoolIds: 1, email: 1 }` in the `User` collection for fast login lookups while allowing the same email across different schools (e.g., if a student attends multiple Pathshala-powered schools).
+   - Index `schoolId` (or `schoolIds` where applicable) on all tenant collections.
 3. **Soft Deletes:** Use `isActive: false` instead of deleting users to maintain referential integrity in past records (e.g., old attendance or grades).
